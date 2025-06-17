@@ -93,8 +93,8 @@ h1 {
     background-color: white;
 }
 
-.guess-result-item[data-color="lavender"] {
-    background-color: lavender;
+.guess-result-item[data-color="gray"] {
+    background-color: gray;
 }
 
 
@@ -166,4 +166,10 @@ h1 {
     background-color: #555;
 }
 
+#timer-display {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: rgb(80, 80, 120);
+}
 

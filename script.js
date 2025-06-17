@@ -3,16 +3,64 @@ const colorLists = document.querySelectorAll('.color-list');
 const colorOptions = document.querySelectorAll('.color-option');
 const availableColors = ['red', 'blue', 'green', 'yellow', 'brown'];
 
+let gameOver = false;
+let currentTurn = 0;
+const MAX_TURNS = 12;
+
+
+let turnTimer = null;
+let countdownInterval = null;
+const TURN_TIME_LIMIT = 10; //10 Sekunden
+
+function startTurnTimer() {
+    clearTimeout(turnTimer);
+    clearInterval(countdownInterval);
+
+    let timeLeft = TURN_TIME_LIMIT;
+    updateTimerDisplay(timeLeft);
+
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay(timeLeft);
+
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+
+    turnTimer = setTimeout(() => {
+        console.log("Zeitlimit erreicht, automatischer Zug...");
+        submitGuess();
+    }, TURN_TIME_LIMIT * 1000);
+}
+
+function stopTimer() {
+    clearTimeout(turnTimer);
+    clearInterval(countdownInterval);
+    updateTimerDisplay(0); 
+}
+
+
+function updateTimerDisplay(seconds) {
+    const timerEl = document.querySelector('#timer-display');
+    if (timerEl) {
+        timerEl.textContent = `Zeit: ${seconds}s`;
+    }
+}
 
 function resetColorInputs() {
     document.querySelectorAll('.color-display').forEach(display => {
         display.style.backgroundColor = 'gray'; 
     });
     document.querySelector('#result').textContent = ''; // Ergebnisanzeige leeren
+    startTurnTimer();
 }
 resetColorInputs();
 
 function restartGame() {
+    //Anzahl Züge zurücksetzen
+    currentTurn = 0;
+    
     // Neues Secret
     secretCode = generateSecretCode();
     gameOver = false;
@@ -26,7 +74,6 @@ function restartGame() {
     // Rückmeldung löschen
     document.querySelector('#result').textContent = '';
 }
-
 
 function generateSecretCode() {
     let code = [];
@@ -117,15 +164,12 @@ function renderGuess(colors, result) {
     }
 }
 
-
-let gameOver = false;
-
 function submitGuess() {
-	if (gameOver) return;
+    if (gameOver) return;
+
     const selectedColors = Array.from(document.querySelectorAll('.color-display'))
         .map(el => {
             const bgColor = el.style.backgroundColor;
-            // Farbe als Farbname rückübersetzen
             return availableColors.find(color => color === bgColor) || null;
         });
 
@@ -135,15 +179,30 @@ function submitGuess() {
     }
 
     const result = evaluateGuess(secretCode, selectedColors);
-    if (result.black === 4) {
-        document.querySelector('#result').textContent = "🎉 Du hast den Code geknackt!";
-        gameOver = true;
-    }
     console.log('Dein Tipp:', selectedColors);
     console.log('Ergebnis:', result);
 
     renderGuess(selectedColors, result);
+    currentTurn++;
+
+    if (result.black === 4) {
+        document.querySelector('#result').textContent = "🎉 Du hast den Code geknackt!";
+        gameOver = true;
+        stopTimer();
+        return;
+    }
+
+    if (currentTurn >= MAX_TURNS) {
+        document.querySelector('#result').textContent = `💥 Game Over! Der Code war: ${secretCode.join(', ')}`;
+        gameOver = true;
+        stopTimer();
+        currentTurn = 0;
+        return;
+    }
+
+    startTurnTimer(); // Für den nächsten Zug
 }
+
 
 colorDisplays.forEach((display, index) => {
     display.addEventListener('click', () => {
@@ -164,7 +223,14 @@ colorOptions.forEach(option => {
 console.log(secretCode)
 
 //Event-Listener:
-document.querySelector('#submit-guess').addEventListener('click', submitGuess);
+//document.querySelector('#submit-guess').addEventListener('click', submitGuess);
+document.querySelector('#submit-guess').addEventListener('click', () => {
+    clearTimeout(turnTimer);
+    clearInterval(countdownInterval);
+    submitGuess();
+});
+
+
 document.querySelector('#restart-game').addEventListener('click', restartGame);
 
 
