@@ -7,13 +7,12 @@ let gameOver = false;
 let currentTurn = 0;
 const MAX_TURNS = 12;
 
-
 let turnTimer = null;
 let countdownInterval = null;
-const TURN_TIME_LIMIT = 10; //10 Sekunden
+const TURN_TIME_LIMIT = 10; //in Sekunden
 
 function startTurnTimer() {
-    clearTimeout(turnTimer);
+    clearTimeout(turnTimer); // bei jedem Zug neu
     clearInterval(countdownInterval);
 
     let timeLeft = TURN_TIME_LIMIT;
