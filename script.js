@@ -16,11 +16,11 @@ function startTurnTimer() {
     clearInterval(countdownInterval);
 
     let timeLeft = TURN_TIME_LIMIT;
-    updateTimerDisplay(timeLeft);
+    updateTimerDisplay(timeLeft); // verbleibende Zeit schreiben
 
     countdownInterval = setInterval(() => {
         timeLeft--;
-        updateTimerDisplay(timeLeft);
+        updateTimerDisplay(timeLeft); // verbleibende Zeit schreiben
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
