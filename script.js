@@ -2,15 +2,31 @@ const colorDisplays = document.querySelectorAll('.color-display');
 const colorLists = document.querySelectorAll('.color-list');
 const colorOptions = document.querySelectorAll('.color-option');
 const availableColors = ['red', 'blue', 'green', 'yellow', 'brown'];
-const secretCode = generateSecretCode();
+
 
 function resetColorInputs() {
     document.querySelectorAll('.color-display').forEach(display => {
-        display.style.backgroundColor = 'gray'; // oder z. B. 'transparent'
+        display.style.backgroundColor = 'gray'; 
     });
     document.querySelector('#result').textContent = ''; // Ergebnisanzeige leeren
 }
 resetColorInputs();
+
+function restartGame() {
+    // Neues Secret
+    secretCode = generateSecretCode();
+    gameOver = false;
+
+    // Entferne alte Guess-Zeilen
+    document.querySelector('#guesses').innerHTML = '';
+
+    // Reset Farbanzeige
+    resetColorInputs();
+
+    // Rückmeldung löschen
+    document.querySelector('#result').textContent = '';
+}
+
 
 function generateSecretCode() {
     let code = [];
@@ -21,6 +37,7 @@ function generateSecretCode() {
     console.log('Secret Code:', code); // Zum Debuggen sichtbar machen
     return code;
 }
+let secretCode = generateSecretCode();
 
 function evaluateGuess(secret, guess) {
     let black = 0, white = 0;
@@ -144,8 +161,12 @@ colorOptions.forEach(option => {
     });
 });
 
-document.querySelector('#submit-guess').addEventListener('click', submitGuess);
 console.log(secretCode)
+
+//Event-Listener:
+document.querySelector('#submit-guess').addEventListener('click', submitGuess);
+document.querySelector('#restart-game').addEventListener('click', restartGame);
+
 
 
 
