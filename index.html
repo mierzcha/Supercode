@@ -5,8 +5,13 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div id="game-board">
+	    <div id="game-board">
         <h1>Supercode</h1>
+        <div id="settings">
+			<label for="turn-time">Zugzeit (Sekunden):</label>
+			<input type="number" id="turn-time" min="5" max="60" value="10">
+			<button id="start-game" class="btn">Spiel starten</button>
+		</div>
         <div id="guesses">
         </div>
         <hr>
@@ -57,10 +62,7 @@
                     </div>
                 </div>
             </div>
-            <div id="timer">⏳ Zeit pro Zug: 10s</div>
-            <p id="timer-display">Zeit: 10s</p>
-
-
+          
             <button id="submit-guess" class="btn">Submit Guess</button>
             <button id="restart-game" class="btn">Restart Game</button>
 

@@ -166,10 +166,14 @@ h1 {
     background-color: #555;
 }
 
-#timer-display {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 15px;
-    color: rgb(80, 80, 120);
+#settings {
+    margin-bottom: 20px;
+    text-align: center;
 }
 
+#settings input {
+    width: 60px;
+    padding: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}

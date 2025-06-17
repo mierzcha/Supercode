@@ -7,44 +7,57 @@ let gameOver = false;
 let currentTurn = 0;
 const MAX_TURNS = 12;
 
-let turnTimer = null;
-let countdownInterval = null;
-const TURN_TIME_LIMIT = 10; //in Sekunden
+let turnTime = 10; // Standardwert
+let turnTimer;
+let countdownInterval;
+
+function startGame() {
+    stopTimer(); // Überlappende timer vermeiden
+    resetColorInputs();
+    document.querySelector('#guesses').innerHTML = '';
+    document.querySelector('#result').textContent = '';
+    currentTurn = 0;
+    gameOver = false;
+    secretCode.length = 0;
+    secretCode.push(...generateSecretCode());
+    startTurnTimer();
+}
+
 
 function startTurnTimer() {
-    clearTimeout(turnTimer); // bei jedem Zug neu
-    clearInterval(countdownInterval);
+    stopTimer(); // alte timer stoppen
 
-    let timeLeft = TURN_TIME_LIMIT;
-    updateTimerDisplay(timeLeft); // verbleibende Zeit schreiben
+    let timeLeft = turnTime;
+    updateTimerDisplay(timeLeft);
 
     countdownInterval = setInterval(() => {
         timeLeft--;
-        updateTimerDisplay(timeLeft); // verbleibende Zeit schreiben
-
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-        }
+        updateTimerDisplay(timeLeft);
     }, 1000);
 
     turnTimer = setTimeout(() => {
-        console.log("Zeitlimit erreicht, automatischer Zug...");
-        submitGuess();
-    }, TURN_TIME_LIMIT * 1000);
+        clearInterval(countdownInterval);
+        submitGuess(); // automatischer Zug
+    }, turnTime * 1000);
+}
+
+
+function updateTimerDisplay(seconds) {
+    let timerElement = document.querySelector('#turn-timer');
+    if (!timerElement) {
+        timerElement = document.createElement('div');
+        timerElement.id = 'turn-timer';
+        timerElement.style.fontSize = '20px';
+        timerElement.style.marginTop = '10px';
+        document.querySelector('#game-board').appendChild(timerElement);
+    }
+    timerElement.textContent = `⏳ Zeit: ${seconds}s`;
 }
 
 function stopTimer() {
     clearTimeout(turnTimer);
     clearInterval(countdownInterval);
     updateTimerDisplay(0); 
-}
-
-
-function updateTimerDisplay(seconds) {
-    const timerEl = document.querySelector('#timer-display');
-    if (timerEl) {
-        timerEl.textContent = `Zeit: ${seconds}s`;
-    }
 }
 
 function resetColorInputs() {
@@ -57,6 +70,9 @@ function resetColorInputs() {
 resetColorInputs();
 
 function restartGame() {
+	//timer zurücksetzen
+	stopTimer();
+	
     //Anzahl Züge zurücksetzen
     currentTurn = 0;
     
@@ -223,6 +239,19 @@ console.log(secretCode)
 
 //Event-Listener:
 //document.querySelector('#submit-guess').addEventListener('click', submitGuess);
+document.querySelector('#start-game').addEventListener('click', () => {
+    const inputTime = parseInt(document.querySelector('#turn-time').value, 10);
+    if (!isNaN(inputTime) && inputTime >= 5 && inputTime <= 60) {
+        turnTime = inputTime;
+    } else {
+        alert("Bitte eine gültige Zahl zwischen 5 und 60 eingeben.");
+        return;
+    }
+
+    startGame();
+});
+
+
 document.querySelector('#submit-guess').addEventListener('click', () => {
     clearTimeout(turnTimer);
     clearInterval(countdownInterval);
